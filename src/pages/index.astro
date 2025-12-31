@@ -27,20 +27,32 @@ import "@/styles/global.css";
 		<script>
 			import { authClient } from "@/lib/auth-client";
 
-			document
-				.getElementById("login-btn")
-				?.addEventListener("click", async () => {
-					console.log("Login button clicked, attempting sign in...");
+			console.log("Index page script running...");
+			const btn = document.getElementById("login-btn");
+
+			if (btn) {
+				console.log("Login button found, attaching listener.");
+				btn.addEventListener("click", async () => {
+					console.log(
+						"Login button clicked! Calling signIn.social...",
+					);
 					try {
 						const res = await authClient.signIn.social({
 							provider: "twitter",
 							callbackURL: "/dashboard",
 						});
 						console.log("Sign in result:", res);
+						if (res.error) {
+							alert("Sign in error: " + res.error.message);
+						}
 					} catch (e) {
-						console.error("Sign in error:", e);
+						console.error("Sign in exception:", e);
+						alert("Sign in exception: " + e);
 					}
 				});
+			} else {
+				console.error("CRITICAL: Login button NOT found in DOM.");
+			}
 		</script>
 	</body>
 </html>

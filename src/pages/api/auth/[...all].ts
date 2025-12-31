@@ -23,10 +23,14 @@ export const ALL: APIRoute = async (ctx) => {
         return await auth.handler(ctx.request);
     } catch (e: any) {
         console.error("Auth Route Error:", e);
+        if (typeof e === 'object') {
+            console.error(JSON.stringify(e, null, 2));
+        }
         return new Response(JSON.stringify({
             error: "Internal Server Error during Auth",
-            message: e.message,
-            stack: import.meta.env.DEV ? e.stack : undefined
+            message: e?.message || "Unknown error",
+            stack: import.meta.env.DEV ? e?.stack : undefined,
+            details: typeof e === 'object' ? e : "Not an object"
         }), {
             status: 500,
             headers: { "Content-Type": "application/json" }

@@ -13,6 +13,11 @@ export default defineConfig({
   integrations: [react()],
 
   vite: {
-    plugins: [tailwindcss()]
+    plugins: [tailwindcss()],
+    build: {
+      rollupOptions: {
+        external: ["node:async_hooks"],
+      },
+    },
   }
 });

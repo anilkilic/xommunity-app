@@ -12,11 +12,17 @@ export const createAuth = (env: any) => {
                 ...schema
             }
         }),
+        trustedOrigins: [
+            "http://localhost:8788",
+            "http://127.0.0.1:8788",
+            "http://localhost:4321"
+        ],
         socialProviders: {
             twitter: {
                 clientId: env.X_CLIENT_ID as string,
                 clientSecret: env.X_CLIENT_SECRET as string,
             },
         },
+        secret: env.BETTER_AUTH_SECRET,
     });
 }

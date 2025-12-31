@@ -1,44 +1,97 @@
 ---
 import { createAuth } from "@/lib/auth";
 
-const auth = createAuth(Astro.locals.runtime.env);
-const session = await auth.api.getSession({
-    headers: Astro.request.headers,
-});
+const runtime = Astro.locals.runtime;
+let session = null;
+let error = null;
 
-if (!session) {
+try {
+    if (!runtime?.env?.DB) {
+        throw new Error("Missing Cloudflare D1 binding (DB)");
+    }
+    const auth = createAuth(runtime.env);
+
+    // LOGGING: Inspect the session retrieval
+    console.log("Dashboard: Attempting to get session...");
+    session = await auth.api.getSession({
+        headers: Astro.request.headers,
+    });
+    console.log("Dashboard: Session result:", JSON.stringify(session, null, 2));
+} catch (e: any) {
+    console.error("Dashboard Auth Error:", e);
+    // Ensure we log the full object if it's an object, to avoid [Object object] in logs
+    if (typeof e === "object") {
+        console.error(JSON.stringify(e, null, 2));
+    }
+    error = e;
+}
+
+if (!session && !error) {
+    console.log("Dashboard: No session and no error, redirecting to /");
     return Astro.redirect("/");
 }
 ---
 
 <html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Dashboard - Xommunity</title>
-	</head>
-	<body class="bg-background text-foreground min-h-screen flex flex-col items-center justify-center">
-		<h1 class="text-4xl font-bold mb-4">Dashboard</h1>
-        <p class="mb-8">Welcome, {session.user.name}!</p>
-        
-        <button id="logout-btn" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">
-            Sign Out
-        </button>
+    <head>
+        <meta charset="utf-8" />
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <meta name="viewport" content="width=device-width" />
+        <meta name="generator" content={Astro.generator} />
+        <title>Dashboard - Xommunity</title>
+    </head>
+    <body
+        class="bg-background text-foreground min-h-screen flex flex-col items-center justify-center"
+    >
+        {
+            error ? (
+                <div class="p-4 bg-red-100 text-red-900 rounded">
+                    <h1 class="font-bold">Error Loading Dashboard</h1>
+                    {/* SAFE RENDERING: Ensure error.message is a string */}
+                    <p>
+                        {typeof error.message === "string"
+                            ? error.message
+                            : JSON.stringify(error.message)}
+                    </p>
+                    <pre class="text-xs mt-2">
+                        {JSON.stringify(error, null, 2)}
+                    </pre>
+                </div>
+            ) : (
+                <>
+                    <h1 class="text-4xl font-bold mb-4">Dashboard</h1>
+                    <p class="mb-8">
+                        Welcome,{" "}
+                        {typeof session?.user?.name === "string"
+                            ? session.user.name
+                            : "User"}
+                        !
+                    </p>
+
+                    <button
+                        id="logout-btn"
+                        class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+                    >
+                        Sign Out
+                    </button>
+                </>
+            )
+        }
 
         <script>
             import { authClient } from "@/lib/auth-client";
-            
-            document.getElementById("logout-btn")?.addEventListener("click", async () => {
-                await authClient.signOut({
-                    fetchOptions: {
-                        onSuccess: () => {
-                            window.location.href = "/";
+
+            document
+                .getElementById("logout-btn")
+                ?.addEventListener("click", async () => {
+                    await authClient.signOut({
+                        fetchOptions: {
+                            onSuccess: () => {
+                                window.location.href = "/";
+                            },
                         },
-                    },
+                    });
                 });
-            });
         </script>
-	</body>
+    </body>
 </html>

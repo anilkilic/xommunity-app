@@ -1,6 +1,6 @@
 {
   "pages_build_output_dir": "./dist",
-  "name": "xommunity-app",
+  "name": "xommunity",
   "compatibility_date": "2025-12-31",
   "compatibility_flags": [
     "nodejs_compat",
@@ -8,6 +8,10 @@
   ],
   "observability": {
     "enabled": true
+  },
+  "vars": {
+    "PUBLIC_BETTER_AUTH_URL": "https://xommunity.pages.dev",
+    "BETTER_AUTH_URL": "https://xommunity.pages.dev"
   },
   "d1_databases": [
     {
