@@ -26,9 +26,17 @@ export const ALL: APIRoute = async (ctx) => {
         if (typeof e === 'object') {
             console.error(JSON.stringify(e, null, 2));
         }
+        let message = e?.message || "Unknown error";
+        if (typeof message !== "string") {
+            message = JSON.stringify(message);
+        }
+        if (message === "[object Object]") {
+             message = JSON.stringify(e, Object.getOwnPropertyNames(e));
+        }
+
         return new Response(JSON.stringify({
             error: "Internal Server Error during Auth",
-            message: e?.message || "Unknown error",
+            message: message,
             stack: import.meta.env.DEV ? e?.stack : undefined,
             details: typeof e === 'object' ? e : "Not an object"
         }), {

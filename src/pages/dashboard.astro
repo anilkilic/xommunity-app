@@ -49,12 +49,19 @@ if (!session && !error) {
                     <h1 class="font-bold">Error Loading Dashboard</h1>
                     {/* SAFE RENDERING: Ensure error.message is a string */}
                     <p>
-                        {typeof error.message === "string"
-                            ? error.message
-                            : JSON.stringify(error.message)}
+                        {(() => {
+                             let msg = error.message;
+                             if (typeof msg !== 'string') {
+                                 msg = JSON.stringify(msg);
+                             }
+                             if (msg === '[object Object]') {
+                                 return JSON.stringify(error, Object.getOwnPropertyNames(error), 2);
+                             }
+                             return msg;
+                        })()}
                     </p>
                     <pre class="text-xs mt-2">
-                        {JSON.stringify(error, null, 2)}
+                        {JSON.stringify(error, Object.getOwnPropertyNames(error), 2)}
                     </pre>
                 </div>
             ) : (
