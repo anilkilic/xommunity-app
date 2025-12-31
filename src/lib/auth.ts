@@ -9,7 +9,7 @@ export const createAuth = (env: any) => {
         database: drizzleAdapter(db, {
             provider: "sqlite",
             schema: {
-                // Mapping simpler naming if desired, but default is fine if schema matches
+                ...schema
             }
         }),
         socialProviders: {
