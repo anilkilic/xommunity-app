@@ -43,7 +43,10 @@ import "@/styles/global.css";
 						});
 						console.log("Sign in result:", res);
 						if (res.error) {
-							alert("Sign in error: " + res.error.message);
+							const msg = typeof res.error.message === 'string'
+								? res.error.message
+								: JSON.stringify(res.error.message);
+							alert("Sign in error: " + msg);
 						}
 					} catch (e) {
 						console.error("Sign in exception:", e);

@@ -8,6 +8,8 @@ type Env = {
     X_CLIENT_ID: string;
     X_CLIENT_SECRET: string;
     BETTER_AUTH_SECRET: string;
+    BETTER_AUTH_URL: string;
+    PUBLIC_BETTER_AUTH_URL?: string;
 };
 
 declare namespace App {
