@@ -15,8 +15,10 @@ export const createAuth = (env: any) => {
         trustedOrigins: [
             "http://localhost:8788",
             "http://127.0.0.1:8788",
-            "http://localhost:4321"
-        ],
+            "http://localhost:4321",
+            "https://xommunity.pages.dev",
+            env.PUBLIC_BETTER_AUTH_URL // dynamically add from env if present
+        ].filter(Boolean) as string[],
         socialProviders: {
             twitter: {
                 clientId: env.X_CLIENT_ID as string,
