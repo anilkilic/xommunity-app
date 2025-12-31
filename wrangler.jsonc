@@ -1,0 +1,23 @@
+{
+  "main": "dist/_worker.js/index.js",
+  "name": "xommunity-app",
+  "compatibility_date": "2025-12-31",
+  "compatibility_flags": [
+    "nodejs_compat",
+    "global_fetch_strictly_public"
+  ],
+  "assets": {
+    "binding": "ASSETS",
+    "directory": "./dist"
+  },
+  "observability": {
+    "enabled": true
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "xommunity-db",
+      "database_id": "b70d72c8-0002-4a4b-ba42-81ffc282c3fe"
+    }
+  ]
+}
