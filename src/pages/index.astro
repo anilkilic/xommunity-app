@@ -30,10 +30,16 @@ import "@/styles/global.css";
 			document
 				.getElementById("login-btn")
 				?.addEventListener("click", async () => {
-					await authClient.signIn.social({
-						provider: "twitter",
-						callbackURL: "/dashboard", // Redirect to dashboard after login
-					});
+					console.log("Login button clicked, attempting sign in...");
+					try {
+						const res = await authClient.signIn.social({
+							provider: "twitter",
+							callbackURL: "/dashboard",
+						});
+						console.log("Sign in result:", res);
+					} catch (e) {
+						console.error("Sign in error:", e);
+					}
 				});
 		</script>
 	</body>
