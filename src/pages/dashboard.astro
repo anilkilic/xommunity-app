@@ -1,0 +1,44 @@
+---
+import { createAuth } from "@/lib/auth";
+
+const auth = createAuth(Astro.locals.runtime.env);
+const session = await auth.api.getSession({
+    headers: Astro.request.headers,
+});
+
+if (!session) {
+    return Astro.redirect("/");
+}
+---
+
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="viewport" content="width=device-width" />
+		<meta name="generator" content={Astro.generator} />
+		<title>Dashboard - Xommunity</title>
+	</head>
+	<body class="bg-background text-foreground min-h-screen flex flex-col items-center justify-center">
+		<h1 class="text-4xl font-bold mb-4">Dashboard</h1>
+        <p class="mb-8">Welcome, {session.user.name}!</p>
+        
+        <button id="logout-btn" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">
+            Sign Out
+        </button>
+
+        <script>
+            import { authClient } from "@/lib/auth-client";
+            
+            document.getElementById("logout-btn")?.addEventListener("click", async () => {
+                await authClient.signOut({
+                    fetchOptions: {
+                        onSuccess: () => {
+                            window.location.href = "/";
+                        },
+                    },
+                });
+            });
+        </script>
+	</body>
+</html>

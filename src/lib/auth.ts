@@ -1,14 +1,22 @@
 import { betterAuth } from "better-auth";
-import { d1Adapter } from "better-auth/adapters/d1";
+import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import { drizzle } from "drizzle-orm/d1";
+import * as schema from "../db/schema";
 
-export const auth = betterAuth({
-    database: d1Adapter({
-        binding: process.env.DB, // The binding name in wrangler.jsonc
-    }),
-    socialProviders: {
-        twitter: {
-            clientId: process.env.X_CLIENT_ID as string,
-            clientSecret: process.env.X_CLIENT_SECRET as string,
+export const createAuth = (env: any) => {
+    const db = drizzle(env.DB, { schema });
+    return betterAuth({
+        database: drizzleAdapter(db, {
+            provider: "sqlite",
+            schema: {
+                // Mapping simpler naming if desired, but default is fine if schema matches
+            }
+        }),
+        socialProviders: {
+            twitter: {
+                clientId: env.X_CLIENT_ID as string,
+                clientSecret: env.X_CLIENT_SECRET as string,
+            },
         },
-    },
-});
+    });
+}
