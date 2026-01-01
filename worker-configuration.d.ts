@@ -4,6 +4,7 @@
 declare namespace Cloudflare {
     interface Env {
         DB: D1Database;
+        SESSION: KVNamespace;
     }
 }
 interface Env extends Cloudflare.Env { }
