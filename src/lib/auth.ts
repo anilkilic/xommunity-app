@@ -8,6 +8,7 @@ export const createAuth = (db: D1Database, env: Env) => {
         database: drizzleAdapter(drizzle, {
             provider: "sqlite",
         }),
+        secret: env.BETTER_AUTH_SECRET,
         emailAndPassword: {
             enabled: false,
         },

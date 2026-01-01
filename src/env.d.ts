@@ -14,4 +14,5 @@ interface Env {
 	DB: D1Database;
 	X_CLIENT_ID: string;
 	X_CLIENT_SECRET: string;
+	BETTER_AUTH_SECRET: string;
 }
