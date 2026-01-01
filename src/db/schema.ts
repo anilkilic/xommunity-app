@@ -3,8 +3,8 @@ import { sqliteTable, text, integer, int } from "drizzle-orm/sqlite-core";
 export const user = sqliteTable("user", {
     id: text("id").primaryKey(),
     name: text("name").notNull(),
-    email: text("email").notNull().unique(),
-    emailVerified: integer("email_verified", { mode: "boolean" }).notNull(),
+    email: text("email"), // Nullable - Twitter doesn't provide email
+    emailVerified: integer("email_verified", { mode: "boolean" }).default(false),
     image: text("image"),
     createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
     updatedAt: integer("updated_at", { mode: "timestamp" }).notNull(),
