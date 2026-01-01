@@ -1,0 +1,6 @@
+DROP TABLE IF EXISTS TestItems;
+CREATE TABLE TestItems (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT NOT NULL
+);
+INSERT INTO TestItems (name) VALUES ('Item 1'), ('Item 2'), ('Item 3');

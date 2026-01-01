@@ -12,7 +12,7 @@
 	"pages_build_output_dir": "./dist",
 	"observability": {
 		"enabled": true
-	}
+	},
 	/**
 	 * Smart Placement
 	 * https://developers.cloudflare.com/workers/configuration/smart-placement/#smart-placement
@@ -40,5 +40,12 @@
 	 * Service Bindings (communicate between multiple Workers)
 	 * https://developers.cloudflare.com/workers/wrangler/configuration/#service-bindings
 	 */
-	// "services": [  {   "binding": "MY_SERVICE",   "service": "my-service"  } ]
+	// "services": [  {   "binding": "MY_SERVICE",   "service": "my-service"  } ],
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "xommunity-db",
+			"database_id": "b70d72c8-0002-4a4b-ba42-81ffc282c3fe"
+		}
+	]
 }

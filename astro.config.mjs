@@ -11,5 +11,6 @@ export default defineConfig({
     },
 
     imageService: "cloudflare"
-  })
+  }),
+  output: "server"
 });

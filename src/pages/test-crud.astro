@@ -1,0 +1,199 @@
+---
+import Layout from "../layouts/Layout.astro";
+
+interface User {
+    id: number;
+    name: string;
+}
+
+const { env } = Astro.locals.runtime;
+let users: User[] = [];
+let error = "";
+
+// Handle POST requests
+console.log(
+    `Method: ${Astro.request.method}, Content-Type: ${Astro.request.headers.get("Content-Type")}`,
+);
+if (Astro.request.method === "POST") {
+    const contentType = Astro.request.headers.get("Content-Type") || "";
+    if (
+        contentType.includes("multipart/form-data") ||
+        contentType.includes("application/x-www-form-urlencoded")
+    ) {
+        try {
+            const data = await Astro.request.formData();
+            const action = data.get("action");
+            console.log("Form Data:", Object.fromEntries(data.entries()));
+
+            if (action === "create") {
+                const name = data.get("name");
+                console.log("Action: create, Name:", name);
+                if (typeof name === "string" && name.length > 0) {
+                    const res = await env.DB.prepare(
+                        "INSERT INTO TestItems (name) VALUES (?)",
+                    )
+                        .bind(name)
+                        .run();
+                    console.log("Create Result:", res);
+                }
+            } else if (action === "delete") {
+                const id = data.get("id");
+                console.log("Action: delete, ID:", id);
+                if (id) {
+                    const res = await env.DB.prepare(
+                        "DELETE FROM TestItems WHERE id = ?",
+                    )
+                        .bind(id)
+                        .run();
+                    console.log("Delete Result:", res);
+                }
+            } else if (action === "update") {
+                const id = data.get("id");
+                const name = data.get("name");
+                console.log("Action: update, ID:", id, "Name:", name);
+                if (id && typeof name === "string" && name.length > 0) {
+                    const res = await env.DB.prepare(
+                        "UPDATE TestItems SET name = ? WHERE id = ?",
+                    )
+                        .bind(name, id)
+                        .run();
+                    console.log("Update Result:", res);
+                }
+            } else {
+                console.warn("Unknown action:", action);
+            }
+        } catch (e: any) {
+            error = e.message;
+            console.error(e);
+        }
+    } else {
+        console.warn("Invalid Content-Type for POST request:", contentType);
+    }
+}
+
+// Fetch data (GET)
+try {
+    const result = await env.DB.prepare(
+        "SELECT * FROM TestItems ORDER BY id DESC",
+    ).all<User>();
+    users = result.results;
+} catch (e: any) {
+    error = e.message;
+}
+---
+
+<Layout>
+    <main>
+        <h1>D1 CRUD Test</h1>
+
+        {
+            error && (
+                <p style="color: red; border: 1px solid red; padding: 1rem;">
+                    Error: {error}
+                </p>
+            )
+        }
+
+        <section>
+            <h2>Create New Item</h2>
+            <form method="POST">
+                <input type="hidden" name="action" value="create" />
+                <input
+                    type="text"
+                    name="name"
+                    placeholder="Item Name"
+                    required
+                />
+                <button type="submit">Create</button>
+            </form>
+        </section>
+
+        <hr />
+
+        <section>
+            <h2>Items List</h2>
+            {
+                users.length === 0 ? (
+                    <p>No items found.</p>
+                ) : (
+                    <ul>
+                        {users.map((user) => (
+                            <li>
+                                <form
+                                    method="POST"
+                                    style="display: flex; gap: 0.5rem; align-items: center; margin-bottom: 0.5rem;"
+                                >
+                                    <input
+                                        type="hidden"
+                                        name="id"
+                                        value={user.id}
+                                    />
+                                    <span>ID: {user.id}</span>
+                                    <input
+                                        type="text"
+                                        name="name"
+                                        value={user.name}
+                                        required
+                                    />
+                                    <button
+                                        type="submit"
+                                        name="action"
+                                        value="update"
+                                    >
+                                        Update
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        name="action"
+                                        value="delete"
+                                        onclick="return confirm('Are you sure?')"
+                                    >
+                                        Delete
+                                    </button>
+                                </form>
+                            </li>
+                        ))}
+                    </ul>
+                )
+            }
+        </section>
+
+        <div style="margin-top: 2rem;">
+            <p><strong>Note:</strong> Ensure you have applied the schema:</p>
+            <code
+                >npx wrangler d1 execute xommunity-db --local
+                --file=./schema.sql</code
+            >
+        </div>
+    </main>
+</Layout>
+
+<style>
+    main {
+        padding: 2rem;
+        max-width: 800px;
+        margin: 0 auto;
+        font-family: system-ui, sans-serif;
+    }
+    h1 {
+        margin-bottom: 2rem;
+    }
+    section {
+        margin-bottom: 2rem;
+    }
+    form {
+        display: inline-flex;
+        gap: 0.5rem;
+    }
+    ul {
+        list-style: none;
+        padding: 0;
+    }
+    input[type="text"] {
+        padding: 0.5rem;
+    }
+    button {
+        padding: 0.5rem 1rem;
+        cursor: pointer;
+    }
+</style>
