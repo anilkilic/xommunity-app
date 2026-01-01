@@ -13,8 +13,8 @@ export const createAuth = (db: D1Database, env: Env) => {
         },
         socialProviders: {
             twitter: {
-                clientId: env.TWITTER_CLIENT_ID,
-                clientSecret: env.TWITTER_CLIENT_SECRET,
+                clientId: env.X_CLIENT_ID,
+                clientSecret: env.X_CLIENT_SECRET,
             },
         },
     });

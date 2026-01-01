@@ -12,6 +12,6 @@ declare namespace App {
 
 interface Env {
 	DB: D1Database;
-	TWITTER_CLIENT_ID: string;
-	TWITTER_CLIENT_SECRET: string;
+	X_CLIENT_ID: string;
+	X_CLIENT_SECRET: string;
 }
