@@ -7,6 +7,7 @@ interface User {
 }
 
 const { env } = Astro.locals.runtime;
+console.log("Runtime Env Keys:", Object.keys(env || {}));
 let users: User[] = [];
 let error = "";
 
@@ -63,8 +64,8 @@ if (Astro.request.method === "POST") {
                 console.warn("Unknown action:", action);
             }
         } catch (e: any) {
-            error = e.message;
-            console.error(e);
+            console.error("POST Error:", e);
+            error = e.message || JSON.stringify(e);
         }
     } else {
         console.warn("Invalid Content-Type for POST request:", contentType);
@@ -73,12 +74,16 @@ if (Astro.request.method === "POST") {
 
 // Fetch data (GET)
 try {
+    if (!env.DB) {
+        throw new Error("env.DB is undefined. Check bindings.");
+    }
     const result = await env.DB.prepare(
         "SELECT * FROM TestItems ORDER BY id DESC",
     ).all<User>();
     users = result.results;
 } catch (e: any) {
-    error = e.message;
+    console.error("GET Error:", e);
+    error = e.message || JSON.stringify(e);
 }
 ---
 
